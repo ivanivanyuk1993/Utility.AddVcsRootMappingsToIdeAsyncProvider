@@ -5,14 +5,15 @@ namespace AddVcsRootMappingsToIdeAsyncProviderNS;
 public static class AddVcsRootMappingsToIdeAsyncProvider
 {
     public static async Task AddVcsRootMappingsToIdeAsync(
-        DirectoryInfo projectRootDirectoryInfo,
+        DirectoryInfo gitRootDirectoryInfo,
+        DirectoryInfo ideProjectRootDirectoryInfo,
         CancellationToken cancellationToken
     )
     {
         var vcsXmlFilePathList = Directory
             .EnumerateFiles(
                 path: Path.Combine(
-                    path1: projectRootDirectoryInfo.FullName,
+                    path1: ideProjectRootDirectoryInfo.FullName,
                     path2: ".idea"
                 ),
                 searchPattern: "vcs.xml",
@@ -21,7 +22,7 @@ public static class AddVcsRootMappingsToIdeAsyncProvider
             .ToArray();
         var directoryToAddList = Directory
             .EnumerateFiles(
-                path: projectRootDirectoryInfo.FullName,
+                path: gitRootDirectoryInfo.FullName,
                 searchPattern: ".git",
                 searchOption: SearchOption.AllDirectories
             )
@@ -29,7 +30,7 @@ public static class AddVcsRootMappingsToIdeAsyncProvider
             {
                 var relativePath = Path.GetRelativePath(
                     path: new FileInfo(fileName: gitFilePath).DirectoryName!,
-                    relativeTo: projectRootDirectoryInfo.FullName
+                    relativeTo: ideProjectRootDirectoryInfo.FullName
                 );
                 return $"$PROJECT_DIR$/{relativePath}";
             })
